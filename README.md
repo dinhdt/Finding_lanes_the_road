@@ -26,11 +26,9 @@ The pipeline consists of following steps
 7. Draw lanes and overlay with original image within ROI
 
 
-In order to find the parameters of the left and right lane, all pairs of points that are outputted from the Hough_lines
-function are clustered depending on their gradient to either left or right lane.
+In order to find the parameters of the left and right lane, all pairs of points that are outputted from the cv2.HoughLinesP function are clustered depending on their gradient to either left or right lane.
 E.g. a line that has a negative gradient (dy/dx = ((y2-y1) / (x2 - x1)) < 0) belongs to the left lane and vice versa.
-Then per lane the mean point and gradient is determined by averaging all points and gradients in the respective cluster.
-After calculating the an average point and gradient the missing bias parameter is determined. In the end all line parameters are determined and used for generating points as an input for the cv2.draw() function.
+The mean point and gradient is determined by averaging all points and gradients in the respective cluster. After calculating the mean point and gradient the missing bias parameter is determined. In the end all line parameters are determined and used for generating points as an input for the cv2.draw() function in order to draw the lines.
 
 
 
