@@ -1,21 +1,14 @@
 # **Finding Lane Lines on the Road** 
 
-## Writeup Template
+The goal in this project to detect the lane markings of the own lane and mark those in the image.
 
-### You can use this file as a template for your writeup if you want to submit it as a markdown file. But feel free to use some other method and submit a pdf if you prefer.
 
----
-
-**Finding Lane Lines on the Road**
 
 The goals / steps of this project are the following:
 * Make a pipeline that finds lane lines on the road
 * Reflect on your work in a written report
 
 
-[//]: # (Image References)
-
-[image1]: ./examples/grayscale.jpg "Grayscale"
 
 ---
 
@@ -23,25 +16,30 @@ The goals / steps of this project are the following:
 
 ### 1. Describe your pipeline. As part of the description, explain how you modified the draw_lines() function.
 
-My pipeline consisted of 5 steps. First, I converted the images to grayscale, then I .... 
-
-In order to draw a single line on the left and right lanes, I modified the draw_lines() function by ...
-
-If you'd like to include images to show how the pipeline works, here is how to include an image: 
-
-![alt text][image1]
-
-
-### 2. Identify potential shortcomings with your current pipeline
+The pipeline consists of following steps
+1. Convert image to grayscale
+2. Reduce noise in image using Gaussian blur
+3. Get edges in image using Canny edge detection
+4. Remove pixels from edges image outside region of interest
+5. Transform edge pixels to Hough space to find lines in image
+6. Get line parameters for left/right lane
+7. Draw lanes and overlay with original image within ROI
 
 
-One potential shortcoming would be what would happen when ... 
+In order to find the parameters of the left and right lane, all pairs of points that are outputted from the Hough_lines
+function are clustered depending on their gradient to either left or right lane.
+E.g. a line that has a negative gradient (dy/dx = ((y2-y1) / (x2 - x1)) < 0) belongs to the left lane and vice versa.
+Then per lane the mean point and gradient is determined by averaging all points and gradients in the respective cluster.
+After calculating the an average point and gradient the missing bias parameter is determined. In the end all line parameters are determined and used for generating points as an input for the cv2.draw() function.
 
-Another shortcoming could be ...
 
 
-### 3. Suggest possible improvements to your pipeline
 
-A possible improvement would be to ...
+### 2. Potential shortcomings
 
-Another potential improvement could be to ...
+When no lines are detected the program crashes in the averaging step. Furthermore there is weak performance on curvy lanes since the algorithm is looking for straight lines.
+
+### 3. Possible improvements
+The first shortcoming can be easily improved by using exception handling.
+In order to handle curved lanes using the current algorithm, one should try to find segments of straight lanes since we are searching for lines and average over them.
+Therefore one could slice the image in y direction into several parts such that these parts contain only straight sub-lanes and then run the pipeline on each of those slices and concatenate all the intermediate results at the end. 
